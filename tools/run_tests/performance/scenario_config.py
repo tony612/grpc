@@ -1256,6 +1256,90 @@ class NodeLanguage:
             return 'node_purejs'
         return 'node'
 
+class ElixirLanguage:
+
+    def __init__(self):
+        pass
+        self.safename = str(self)
+
+    def worker_cmdline(self):
+        return ['tools/run_tests/performance/run_worker_elixir.sh']
+
+    def worker_port_offset(self):
+        return 600
+
+    def scenarios(self):
+        # for secure in [True, False]:
+        for secure in [False]:
+            secstr = 'secure' if secure else 'insecure'
+            smoketest_categories = ([SMOKETEST] if secure else []) + [SCALABLE]
+
+            # ASYNC_GENERIC_SERVER for Go actually uses a sync streaming server,
+            # but that's mostly because of lack of better name of the enum value.
+            # yield _ping_pong_scenario(
+            #     'go_generic_sync_streaming_ping_pong_%s' % secstr,
+            #     rpc_type='STREAMING',
+            #     client_type='SYNC_CLIENT',
+            #     server_type='ASYNC_GENERIC_SERVER',
+            #     use_generic_payload=True,
+            #     async_server_threads=1,
+            #     secure=secure,
+            #     categories=smoketest_categories)
+
+            # yield _ping_pong_scenario(
+            #     'go_protobuf_sync_streaming_ping_pong_%s' % secstr,
+            #     rpc_type='STREAMING',
+            #     client_type='SYNC_CLIENT',
+            #     server_type='SYNC_SERVER',
+            #     async_server_threads=1,
+            #     secure=secure)
+
+            yield _ping_pong_scenario(
+                'elixir_protobuf_sync_unary_ping_pong_%s' % secstr,
+                rpc_type='UNARY',
+                client_type='SYNC_CLIENT',
+                server_type='SYNC_SERVER',
+                async_server_threads=1,
+                secure=secure,
+                categories=smoketest_categories)
+
+            # # unconstrained_client='async' is intended (client uses goroutines)
+            # yield _ping_pong_scenario(
+            #     'go_protobuf_sync_unary_qps_unconstrained_%s' % secstr,
+            #     rpc_type='UNARY',
+            #     client_type='SYNC_CLIENT',
+            #     server_type='SYNC_SERVER',
+            #     unconstrained_client='async',
+            #     secure=secure,
+            #     categories=smoketest_categories + [SCALABLE])
+
+            # # unconstrained_client='async' is intended (client uses goroutines)
+            # yield _ping_pong_scenario(
+            #     'go_protobuf_sync_streaming_qps_unconstrained_%s' % secstr,
+            #     rpc_type='STREAMING',
+            #     client_type='SYNC_CLIENT',
+            #     server_type='SYNC_SERVER',
+            #     unconstrained_client='async',
+            #     secure=secure,
+            #     categories=[SCALABLE])
+
+            # # unconstrained_client='async' is intended (client uses goroutines)
+            # # ASYNC_GENERIC_SERVER for Go actually uses a sync streaming server,
+            # # but that's mostly because of lack of better name of the enum value.
+            # yield _ping_pong_scenario(
+            #     'go_generic_sync_streaming_qps_unconstrained_%s' % secstr,
+            #     rpc_type='STREAMING',
+            #     client_type='SYNC_CLIENT',
+            #     server_type='ASYNC_GENERIC_SERVER',
+            #     unconstrained_client='async',
+            #     use_generic_payload=True,
+            #     secure=secure,
+            #     categories=[SCALABLE])
+
+            # TODO(jtattermusch): add scenarios go vs C++
+
+    def __str__(self):
+        return 'elixir'
 
 LANGUAGES = {
     'c++': CXXLanguage(),
@@ -1267,5 +1351,6 @@ LANGUAGES = {
     'python': PythonLanguage(),
     'go': GoLanguage(),
     'node': NodeLanguage(),
-    'node_purejs': NodeLanguage(node_purejs=True)
+    'node_purejs': NodeLanguage(node_purejs=True),
+    'elixir': ElixirLanguage(),
 }

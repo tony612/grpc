@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # shellcheck disable=SC1090
-source ~/.rvm/scripts/rvm
+# source ~/.rvm/scripts/rvm
 set -ex
 
 cd "$(dirname "$0")/../../.."
@@ -44,6 +44,9 @@ do
   case "$language" in
   "c++")
     ;;  # C++ has already been built.
+  "elixir")
+    tools/run_tests/performance/build_performance_elixir.sh
+    ;;
   "java")
     (cd ../grpc-java/ &&
       ./gradlew -PskipCodegen=true :grpc-benchmarks:installDist)
